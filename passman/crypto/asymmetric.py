@@ -37,8 +37,13 @@ class _PublicKeyAlgorithmImpl:
         return function
 
     @classmethod
-    def get(cls, algorithm: PublicKeyAlgorithm) -> Optional[KeyPairGenerator]:
-        return cls.mapping.get(algorithm)
+    def get(cls, algorithm: PublicKeyAlgorithm) -> KeyPairGenerator:
+        function = cls.mapping.get(algorithm)
+        if not function:
+            raise KeyError(
+                "Private key cryptography using {} is not implemented!".format(algorithm)
+            )
+        return function
 
 
 @_PublicKeyAlgorithmImpl(PublicKeyAlgorithm.RSA_4096)
@@ -100,9 +105,4 @@ def _ec_SECP384R1() -> KeyPair:
 
 
 def generate_key_pair(algorithm: PublicKeyAlgorithm) -> KeyPair:
-    function = _PublicKeyAlgorithmImpl.get(algorithm)
-    if not function:
-        raise KeyError(
-            "Private key cryptography using {} is not implemented!".format(algorithm)
-        )
-    return function()
+    return _PublicKeyAlgorithmImpl.get(algorithm)()
