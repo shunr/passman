@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Callable, cast, Dict, Optional, Tuple
+from typing import Callable, cast, Dict
 
 import cryptography.hazmat.primitives.serialization as serialization
 from cryptography.hazmat.backends import default_backend
@@ -41,7 +41,9 @@ class _PublicKeyAlgorithmImpl:
         function = cls.mapping.get(algorithm)
         if not function:
             raise KeyError(
-                "Private key cryptography using {} is not implemented!".format(algorithm)
+                "Private key cryptography using {} is not implemented!".format(
+                    algorithm
+                )
             )
         return function
 
