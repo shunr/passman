@@ -34,6 +34,7 @@ FFFFFFFFFFFFFFFF""",
     v = bytes.fromhex(format(pow(g, x_val, N), "x"))
     return v
 
+
 def auth():
     # The salt and verifier should be
     # stored on the server.
@@ -42,7 +43,6 @@ def auth():
 
     class AuthenticationFailed(Exception):
         pass
-
 
     # ~~~ Begin Authentication ~~~
 
@@ -53,7 +53,7 @@ def auth():
     # point on. To comply with the SRP protocol, the authentication
     # process should be aborted on the first failure.
 
-    # Client => Server: account_id, A
+    # Client => Server: username, A
     svr = srp.Verifier(uname, salt, vkey, A)
     s, B = svr.get_challenge()
 

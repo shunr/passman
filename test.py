@@ -10,11 +10,11 @@ from passman.key_utils import (
 )
 
 if __name__ == "__main__":
-    account_id = input("Account id: ")
+    username = input("Account id: ")
     password = input("Password: ")
 
-    accounts.create_account(account_id, password)
-    key = generate_secret_key(account_id)[:32]
+    accounts.create_account(username, password)
+    key = generate_secret_key(username)[:32]
     print(key)
     print(generate_asymmetric_key_pair())
 

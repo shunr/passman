@@ -1,23 +1,25 @@
 import os
 import uuid
+
+import requests
 import srp
+from authlib.jose import jwk
 
 import passman.key_utils as key_utils
-from authlib.jose import jwk
 
 
 class CreateAccountError(Exception):
     pass
 
 
-def create_account(account_id: str, password: str):
-    secret_key = key_utils.generate_secret_key(account_id)
+def create_account(username: str, password: str):
+    secret_key = key_utils.generate_secret_key(username)
     master_unlock_salt = key_utils.generate_salt()
-    srp_x_salt = key_utils.generate_salt()
+    authentication_salt = key_utils.generate_salt()
 
     # Generate key to decrypt
     master_unlock_key = key_utils.derive_key_from_master_password_and_secret_key(
-        account_id=account_id,
+        username=username,
         master_password=password,
         secret_key=secret_key,
         salt=master_unlock_salt,
@@ -25,10 +27,10 @@ def create_account(account_id: str, password: str):
 
     # Generate x for SRP
     srp_x = key_utils.derive_key_from_master_password_and_secret_key(
-        account_id=account_id,
+        username=username,
         master_password=password,
         secret_key=secret_key,
-        salt=srp_x_salt,
+        salt=authentication_salt,
     )
 
     # Create account's keypair
@@ -42,6 +44,19 @@ def create_account(account_id: str, password: str):
     )
 
     from passman.srp_example import create_v
-    print("V: ", create_v(srp_x))
+
+    verifier = create_v(srp_x)
+    print("V: ", verifier)
 
     # Attempt to negotiate w/ server using SRP
+    url = "http://localhost:443/create_account"
+    data = {
+        "username": username,
+        "display_name": "Person",
+        "auth_salt_hex": authentication_salt.hex(),
+        "muk_salt_hex": master_unlock_salt.hex(),
+        "auth_verifier_hex": verifier.hex(),
+    }
+    x = requests.post(url, json=data)
+
+    print(x.text)
