@@ -46,9 +46,8 @@ def create_account(username: str, password: str):
     from passman.srp_example import create_v
 
     verifier = create_v(srp_x)
-    print("V: ", verifier)
 
-    # Attempt to negotiate w/ server using SRP
+    # Attempt to create an account
     url = "http://localhost:443/create_account"
     data = {
         "username": username,
